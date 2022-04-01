@@ -1,19 +1,24 @@
 #include <iostream>
 #include <chrono>
 #include <random>
-#include <string>
 
 class Random {
 public:
-	Random();
-	unsigned long long GetRand();
+	Random() {
+		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+		mt_ = std::mt19937_64(seed);
+	}
+
+	unsigned long long GetRand() {
+		return mt_();
+	}
 private:
 	std::mt19937_64 mt_;
 };
 
 template<class KeyType>
 struct DTreeNode {
-	DTreeNode(std::string newKey) {
+	DTreeNode(KeyType newKey) {
 		Random rnd;
 
 		subtreeWeight_ = 1;
@@ -24,7 +29,7 @@ struct DTreeNode {
 	}
 
 	unsigned long long subtreeWeight_, priority_;
-	std::string key_;
+	KeyType key_;
 
 	DTreeNode *l, *r;
 };
@@ -49,12 +54,12 @@ public:
 		Dump(root_);
 	}
 
-	std::string& operator[](unsigned long long poz) {
+	KeyType& operator[](unsigned long long poz) {
 		return Get(poz);
 	}
 
-	void Insert(std::string str, unsigned long long poz) {
-		Insert(new DTreeNode<KeyType>(str), poz);
+	void Insert(KeyType key, unsigned long long poz) {
+		Insert(new DTreeNode<KeyType>(key), poz);
 	}
 
 	void Erase(unsigned long long poz) {
@@ -78,6 +83,9 @@ private:
 	DTreeNode<KeyType>* root_;
 
 	void Clear(DTreeNode<KeyType>*& cur) {
+		if (cur == nullptr)
+			return;
+		
 		if (cur->l != nullptr)
 			Clear(cur->l);
 
@@ -101,7 +109,7 @@ private:
 			Dump(cur->r);
 	}
 
-	std::string& Get(unsigned long long poz) {
+	KeyType& Get(unsigned long long poz) {
 		DTreeNode<KeyType> *l, *r;
 		Split(root_, l, r, poz);
 
