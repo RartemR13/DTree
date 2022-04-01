@@ -2,7 +2,7 @@
 
 int main() {
 
-	DTree t;
+	DTree<std::string> t;
 
 	for (int i = 0; i < 10; ++i) 
 		t.Insert("A", i);
