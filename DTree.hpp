@@ -25,32 +25,20 @@ public:
 
 	DTree();
 	~DTree();
-
 	void Clear();
-
-	void Clear(DTreeNode*&);
-
 	void Dump();
-
-	void Dump(DTreeNode*);
-
 	std::string& operator[](unsigned long long);
-
-	std::string& Get(unsigned long long);
-
 	void Insert(std::string, unsigned long long);
-
 	void Erase(unsigned long long);
 
+private:
 	DTreeNode* root_;
-
+	void Clear(DTreeNode*&);
+	void Dump(DTreeNode*);
+	std::string& Get(unsigned long long);
 	void Rebalance(DTreeNode*);
-
 	void Split(DTreeNode*, DTreeNode*&, DTreeNode*&, unsigned long long);
-
 	void Merge(DTreeNode*&, DTreeNode*, DTreeNode*);
-
 	void Insert(DTreeNode*, unsigned long long);
-
 	void EraseL(DTreeNode*);
 };
