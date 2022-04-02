@@ -6,7 +6,7 @@
 class Random {
 public:
 
-	//Use chrono to set seed for mt_ (object of mt19937_64).
+//Use chrono to set seed for mt_ (object of mt19937_64).
 	Random() {
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		mt_ = std::mt19937_64(seed);
