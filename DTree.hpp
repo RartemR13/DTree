@@ -39,11 +39,16 @@ class DTree {
 public:
 
 	DTree() : 
-		root_(nullptr)
+		root_(nullptr),
+		size_(0)
 	{}
 
 	~DTree() {
 		Clear();
+	}
+
+	unsigned long long Size() {
+		return size_;
 	}
 
 	void Clear() {
@@ -55,14 +60,23 @@ public:
 	}
 
 	KeyType& operator[](unsigned long long poz) {
+		if (poz >= size_)
+			throw std::out_of_range("");
+
 		return Get(poz);
 	}
 
 	void Insert(KeyType key, unsigned long long poz) {
+		if (poz > size_)
+			throw std::out_of_range("");
+
 		Insert(new DTreeNode<KeyType>(key), poz);
 	}
 
 	void Erase(unsigned long long poz) {
+		if (poz >= size_)
+			throw std::out_of_range("");
+
 		DTreeNode<KeyType> *l, *r;
 		Split(root_, l, r, poz);
 
@@ -77,15 +91,18 @@ public:
 		}
 
 		Merge(root_, l, r);
+
+		size_--;
 	}
 
 private:
 	DTreeNode<KeyType>* root_;
+	unsigned long long size_;
 
 	void Clear(DTreeNode<KeyType>*& cur) {
 		if (cur == nullptr)
 			return;
-		
+
 		if (cur->l != nullptr)
 			Clear(cur->l);
 
@@ -110,6 +127,9 @@ private:
 	}
 
 	KeyType& Get(unsigned long long poz) {
+		if (poz >= size_)
+			throw std::out_of_range("");
+
 		DTreeNode<KeyType> *l, *r;
 		Split(root_, l, r, poz);
 
@@ -192,13 +212,24 @@ private:
 	}
 
 	void Insert(DTreeNode<KeyType>* ins, unsigned long long poz) {
+		if (ins == nullptr)
+			throw std::invalid_argument("");
+
+		if (poz > size_)
+			throw std::out_of_range("");
+
 		DTreeNode<KeyType> *l, *r;
 		Split(root_, l, r, poz);
 		Merge(l, l, ins);
 		Merge(root_, l, r);
+
+		size_++;
 	}
 
 	void EraseL(DTreeNode<KeyType>* delp) {
+		if (delp == nullptr)
+			throw std::invalid_argument("");
+
 		if (delp->l->l != nullptr)
 			EraseL(delp->l);
 		else {
