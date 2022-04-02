@@ -2,20 +2,25 @@
 #include <chrono>
 #include <random>
 
+//Class for get random values to decart tree priorityes.
 class Random {
 public:
+
+	//Use chrono to set seed for mt_ (object of mt19937_64).
 	Random() {
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		mt_ = std::mt19937_64(seed);
 	}
 
+//Method get random value.
 	unsigned long long GetRand() {
 		return mt_();
 	}
 private:
-	std::mt19937_64 mt_;
+	std::mt19937_64 mt_; //Class-object, whoes return needed random values.
 };
 
+//Struct - node of decart tree.
 template<class KeyType>
 struct DTreeNode {
 	DTreeNode(KeyType newKey) {
@@ -25,15 +30,17 @@ struct DTreeNode {
 		priority_ = rnd.GetRand();
 		key_ = newKey;
 
-		l = nullptr, r = nullptr;
+		l = nullptr, r = nullptr; //Base values - nullptr, means that son l or r not exist.
 	}
 
-	unsigned long long subtreeWeight_, priority_;
+	unsigned long long subtreeWeight_, //Count nodes in subtree of current node.
+					   priority_;
 	KeyType key_;
 
-	DTreeNode *l, *r;
+	DTreeNode *l, *r; //Left and right nodes - sons of current node.
 };
 
+//Main class.
 template<class KeyType>
 class DTree {
 public:
@@ -47,18 +54,18 @@ public:
 		Clear();
 	}
 
+//Return count nodes in tree.
 	unsigned long long Size() {
 		return size_;
 	}
 
+//Delete all nodes in tree and delete their from memory.
 	void Clear() {
 		Clear(root_);
 	}
 
-	void Dump() {
-		Dump(root_);
-	}
-
+//For easy access for dekart tree vertexes in poz pozition, O(log size_) approxi.
+//!!!! if poz >= size_, throw out_of_range exception.
 	KeyType& operator[](unsigned long long poz) {
 		if (poz >= size_)
 			throw std::out_of_range("");
@@ -66,6 +73,8 @@ public:
 		return Get(poz);
 	}
 
+//Insert new node with new value - key in poz pozition, O(log size_) approxi.
+//!!!! if poz > size_, throw out_of_range exception.
 	void Insert(KeyType key, unsigned long long poz) {
 		if (poz > size_)
 			throw std::out_of_range("");
@@ -73,6 +82,8 @@ public:
 		Insert(new DTreeNode<KeyType>(key), poz);
 	}
 
+//Erase node in poz pozition, O(log size_) approxi.
+//!!!! if poz >= size_, throw out_of_range exception.
 	void Erase(unsigned long long poz) {
 		if (poz >= size_)
 			throw std::out_of_range("");
@@ -96,9 +107,10 @@ public:
 	}
 
 private:
-	DTreeNode<KeyType>* root_;
-	unsigned long long size_;
+	DTreeNode<KeyType>* root_; //Root-node of decart tree.
+	unsigned long long size_; //Count nodes in decart tree.
 
+//Help function for Clear(), for correct recursive delition.
 	void Clear(DTreeNode<KeyType>*& cur) {
 		if (cur == nullptr)
 			return;
@@ -113,19 +125,8 @@ private:
 		cur = nullptr;
 	}
 
-	void Dump(DTreeNode<KeyType>* cur) {
-		if (cur == nullptr)
-			return;
-
-		if (cur->l != nullptr)
-			Dump(cur->l);
-
-		std::cout << cur->key_ << " " << cur->subtreeWeight_ << " " << cur->priority_ << " " << std::endl;
-
-		if (cur->r != nullptr)
-			Dump(cur->r);
-	}
-
+//Help function for operator[].
+//!!!! if poz >= size_, throw out_of_range exception.
 	KeyType& Get(unsigned long long poz) {
 		if (poz >= size_)
 			throw std::out_of_range("");
@@ -142,6 +143,7 @@ private:
 		return ret->key_;
 	}
 
+//Recalculate subtreeWeight_ for node.
 	void Rebalance(DTreeNode<KeyType>* node) {
 		if (node == nullptr)
 			return;
@@ -211,6 +213,8 @@ private:
 		Rebalance(cur);
 	}
 
+//Help function for Insert(KeyType, unsigned long long)
+//!!!! if ins == nullptr, throw invalid_argument exception.
 	void Insert(DTreeNode<KeyType>* ins, unsigned long long poz) {
 		if (ins == nullptr)
 			throw std::invalid_argument("");
@@ -226,6 +230,8 @@ private:
 		size_++;
 	}
 
+//Help function for Erase(unsigned long long), erase most left son of delp.
+//!!!! if delp == nullptr, throw invalid_argument exception.
 	void EraseL(DTreeNode<KeyType>* delp) {
 		if (delp == nullptr)
 			throw std::invalid_argument("");
